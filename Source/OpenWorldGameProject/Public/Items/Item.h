@@ -16,4 +16,33 @@ public:
 	virtual void Tick(float DeltaTime) override;
 protected:
 	virtual void BeginPlay() override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sine parameters")
+	float Amplitude = 0.25f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sine parameters")
+	float Frequency = 5.f;
+
+	UFUNCTION(BlueprintPure)
+	float TransformedSin();
+	UFUNCTION(BlueprintPure)
+	float TransformedCos();
+
+	template<typename T>
+	T Avg(T first, T second);
+
+private:
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Info")
+	float runningTime;
+
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Info")
+	FVector startLocation;
+
+	UPROPERTY(VisibleAnywhere);
+	UStaticMeshComponent* ItemMesh;
 };
+
+template<typename T>
+inline T AItem::Avg(T first, T second)
+{
+	return (first + second) / 2;
+}
