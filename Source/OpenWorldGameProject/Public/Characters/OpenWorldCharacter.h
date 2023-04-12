@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include <InputActionValue.h>
+#include "CharacterTypes.h"
 #include "OpenWorldCharacter.generated.h"
 
 class UInputMappingContext;
@@ -12,6 +13,7 @@ class UInputAction;
 class USpringArmComponent;
 class UCameraComponent;
 class UGroomComponent;
+class AItem;
 
 UCLASS()
 class OPENWORLDGAMEPROJECT_API AOpenWorldCharacter : public ACharacter
@@ -60,6 +62,9 @@ protected:
 	void Dodge();
 
 private:
+
+	ECharacterState CharacterState = ECharacterState::ECS_Unarmed;
+
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* SpringArm;
 	UPROPERTY(VisibleAnywhere)
@@ -68,4 +73,11 @@ private:
 	UGroomComponent* Hair;
 	UPROPERTY(VisibleAnywhere, Category = Hair)
 	UGroomComponent* Eyebrows;
+
+	UPROPERTY(VisibleInstanceOnly)
+	AItem* OverlappingItem;
+
+public:
+	FORCEINLINE void SetOverlappingItem(AItem* item) { OverlappingItem = item; }
+	FORCEINLINE ECharacterState GetCharacterState() const { return CharacterState;  }
 };

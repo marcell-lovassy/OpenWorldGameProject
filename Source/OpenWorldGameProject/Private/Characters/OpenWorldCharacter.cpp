@@ -9,7 +9,8 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GroomComponent.h"
-
+#include "Items/Item.h"
+#include "Items/Weapons/Weapon.h"
 
 AOpenWorldCharacter::AOpenWorldCharacter()
 {
@@ -56,6 +57,21 @@ void AOpenWorldCharacter::Tick(float DeltaTime)
 
 }
 
+void AOpenWorldCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	if (UEnhancedInputComponent* enhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
+	{
+		enhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AOpenWorldCharacter::Move);
+		enhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AOpenWorldCharacter::Look);
+		enhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AOpenWorldCharacter::Jump);
+		enhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &AOpenWorldCharacter::Attack);
+		enhancedInputComponent->BindAction(DodgeAction, ETriggerEvent::Triggered, this, &AOpenWorldCharacter::Dodge);
+		enhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &AOpenWorldCharacter::Interact);
+	}
+}
+
 void AOpenWorldCharacter::Move(const FInputActionValue& value)
 {
 	const FVector2D movementVector = value.Get<FVector2D>();
@@ -84,6 +100,14 @@ void AOpenWorldCharacter::Look(const FInputActionValue& value)
 
 void AOpenWorldCharacter::Interact()
 {
+	//if OverlappingItem is a nullptr then the cast just simply fails
+	//no need to check if nullptr
+	AWeapon* overlappingWeapon = Cast<AWeapon>(OverlappingItem);
+	if(overlappingWeapon)
+	{
+		overlappingWeapon->Equip(GetMesh(), FName("RightHandSocket"));
+		CharacterState = ECharacterState::ECS_EquippedOneHandedWeapon;
+	}
 }
 
 void AOpenWorldCharacter::Attack()
@@ -94,23 +118,7 @@ void AOpenWorldCharacter::Dodge()
 {
 }
 
-void AOpenWorldCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	if (UEnhancedInputComponent* enhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
-	{
-		enhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AOpenWorldCharacter::Move);
-		enhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AOpenWorldCharacter::Look);
-		enhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AOpenWorldCharacter::Jump);
-		enhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &AOpenWorldCharacter::Attack);
-		enhancedInputComponent->BindAction(DodgeAction, ETriggerEvent::Triggered, this, &AOpenWorldCharacter::Dodge);
-		enhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &AOpenWorldCharacter::Interact);
-	}
-}
-
 void AOpenWorldCharacter::Jump()
 {
 	Super::Jump();
 }
-

@@ -4,6 +4,7 @@
 #include "Items/Item.h"
 #include "OpenWorldGameProject/DebugMacros.h"
 #include "Components/SphereComponent.h"
+#include "Characters/OpenWorldCharacter.h"
 
 AItem::AItem()
 {
@@ -45,19 +46,23 @@ float AItem::TransformedCos()
 
 void AItem::OnSphereTriggerOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	const FString otherActorName = OtherActor->GetName();
-
-	if(GEngine)
+	AOpenWorldCharacter* character = Cast<AOpenWorldCharacter>(OtherActor);
+	if(character)
 	{
-		GEngine->AddOnScreenDebugMessage(1, 3.f, FColor::Red, otherActorName);
+		character->SetOverlappingItem(this);
+		if(GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(1, 3.f, FColor::Cyan, FString("Press E to interact with item"));
+		}
 	}
+
 }
 
 void AItem::OnSphereTriggerEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	const FString otherActorName = FString("Ending overlap with: ") + OtherActor->GetName();
-	if (GEngine)
+	AOpenWorldCharacter* character = Cast<AOpenWorldCharacter>(OtherActor);
+	if (character)
 	{
-		GEngine->AddOnScreenDebugMessage(2, 3.f, FColor::Blue, otherActorName);
+		character->SetOverlappingItem(nullptr);
 	}
 }

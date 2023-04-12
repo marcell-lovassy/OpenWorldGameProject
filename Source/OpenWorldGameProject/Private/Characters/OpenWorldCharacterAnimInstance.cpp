@@ -26,5 +26,6 @@ void UOpenWorldCharacterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	{
 		GroundSpeed = UKismetMathLibrary::VSizeXY(OpenWorldCharacterMovement->Velocity);
 		IsFalling = OpenWorldCharacterMovement->IsFalling();
+		CharacterState = OpenWorldCharacter->GetCharacterState();
 	}
 }

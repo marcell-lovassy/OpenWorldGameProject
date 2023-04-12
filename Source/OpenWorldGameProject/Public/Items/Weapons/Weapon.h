@@ -14,6 +14,10 @@ class OPENWORLDGAMEPROJECT_API AWeapon : public AItem
 {
 	GENERATED_BODY()
 
+public:
+
+	void Equip(USceneComponent* InParent, FName InSocketName);
+
 protected:
 
 	//ufunction inherited

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
+#include "CharacterTypes.h"
 #include "OpenWorldCharacterAnimInstance.generated.h"
 
 
@@ -34,9 +35,6 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = Movement)
 	bool IsFalling;
 
-protected:
-
-
-private:
-	
+	UPROPERTY(BlueprintReadOnly, Category = "Movement | Character State")
+	ECharacterState CharacterState;
 };
