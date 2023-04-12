@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "Item.generated.h"
 
+class USphereComponent;
+
 UCLASS()
 class OPENWORLDGAMEPROJECT_API AItem : public AActor
 {
@@ -30,6 +32,15 @@ protected:
 	template<typename T>
 	T Avg(T first, T second);
 
+	UFUNCTION()
+	virtual void OnSphereTriggerOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	virtual void OnSphereTriggerEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UStaticMeshComponent* ItemMesh;
+
 private:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Info")
 	float runningTime;
@@ -37,8 +48,10 @@ private:
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Info")
 	FVector startLocation;
 
-	UPROPERTY(VisibleAnywhere);
-	UStaticMeshComponent* ItemMesh;
+	
+
+	UPROPERTY(VisibleAnywhere)
+	USphereComponent* SphereTrigger;
 };
 
 template<typename T>
