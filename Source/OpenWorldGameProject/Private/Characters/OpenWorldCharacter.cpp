@@ -11,6 +11,7 @@
 #include "GroomComponent.h"
 #include "Items/Item.h"
 #include "Items/Weapons/Weapon.h"
+#include "Animation/AnimMontage.h"
 
 AOpenWorldCharacter::AOpenWorldCharacter()
 {
@@ -48,6 +49,8 @@ void AOpenWorldCharacter::BeginPlay()
 			subsystem->AddMappingContext(OpenWorldInputContext, 0);
 		}
 	}
+
+
 }
 
 
@@ -112,6 +115,45 @@ void AOpenWorldCharacter::Interact()
 
 void AOpenWorldCharacter::Attack()
 {
+	if(ActionState == EActionState::EAS_Unoccupied)
+	{
+		PlayAttackMontage();
+		ActionState = EActionState::EAS_Attacking;
+	}
+}
+
+void AOpenWorldCharacter::PlayAttackMontage()
+{
+	UAnimInstance* animInstance = GetMesh()->GetAnimInstance();
+	if (animInstance && AttackMontage)
+	{
+		animInstance->Montage_Play(AttackMontage);
+		const int32 selection = FMath::RandRange(0, 1);
+		FName sectionName = FName();
+		switch (selection)
+		{
+		case 0:
+			sectionName = FName("Attack1");
+			break;
+		case 1:
+			sectionName = FName("Attack2");
+			break;
+		default:
+			break;
+		}
+
+		animInstance->Montage_JumpToSection(sectionName);
+		//animInstance->OnMontageEnded.AddDynamic(this, &AOpenWorldCharacter::OnAttackMonstageEnded);
+		//animInstance->OnPlayMontageNotifyEnd.AddDynamic(this, &AOpenWorldCharacter::OnAttackMonstageEnded)
+	}
+}
+
+void AOpenWorldCharacter::OnAttackMonstageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	ActionState = EActionState::EAS_Unoccupied;
+	if(Montage == AttackMontage)
+	{
+	}
 }
 
 void AOpenWorldCharacter::Dodge()

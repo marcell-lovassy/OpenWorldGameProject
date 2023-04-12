@@ -14,6 +14,7 @@ class USpringArmComponent;
 class UCameraComponent;
 class UGroomComponent;
 class AItem;
+class UAnimMontage;
 
 UCLASS()
 class OPENWORLDGAMEPROJECT_API AOpenWorldCharacter : public ACharacter
@@ -55,15 +56,25 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	bool InvertY = false;
 
+	/*
+	Callbacks for input
+	*/
 	void Move(const FInputActionValue& value);
 	void Look(const FInputActionValue& value);
 	void Interact();
 	void Attack();
 	void Dodge();
 
+	/*
+	Play montage functions
+	*/
+	void PlayAttackMontage();
+	void OnAttackMonstageEnded(UAnimMontage* Montage, bool bInterrupted);
+
 private:
 
 	ECharacterState CharacterState = ECharacterState::ECS_Unarmed;
+	EActionState ActionState = EActionState::EAS_Unoccupied;
 
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* SpringArm;
@@ -73,9 +84,15 @@ private:
 	UGroomComponent* Hair;
 	UPROPERTY(VisibleAnywhere, Category = Hair)
 	UGroomComponent* Eyebrows;
-
 	UPROPERTY(VisibleInstanceOnly)
 	AItem* OverlappingItem;
+
+	/*
+	Animation Montages
+	*/
+
+	UPROPERTY(EditDefaultsOnly, Category = Montages)
+	UAnimMontage* AttackMontage;
 
 public:
 	FORCEINLINE void SetOverlappingItem(AItem* item) { OverlappingItem = item; }
