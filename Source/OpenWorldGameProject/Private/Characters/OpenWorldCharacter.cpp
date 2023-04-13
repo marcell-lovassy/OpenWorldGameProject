@@ -49,8 +49,6 @@ void AOpenWorldCharacter::BeginPlay()
 			subsystem->AddMappingContext(OpenWorldInputContext, 0);
 		}
 	}
-
-
 }
 
 
@@ -72,6 +70,7 @@ void AOpenWorldCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 		enhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &AOpenWorldCharacter::Attack);
 		enhancedInputComponent->BindAction(DodgeAction, ETriggerEvent::Triggered, this, &AOpenWorldCharacter::Dodge);
 		enhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &AOpenWorldCharacter::Interact);
+		enhancedInputComponent->BindAction(EquipUnequipAction, ETriggerEvent::Started, this, &AOpenWorldCharacter::ToggleArmed);
 	}
 }
 
@@ -112,6 +111,7 @@ void AOpenWorldCharacter::Interact()
 	{
 		overlappingWeapon->Equip(GetMesh(), FName("RightHandSocket"));
 		CharacterState = ECharacterState::ECS_EquippedOneHandedWeapon;
+		EquippedWeapon = overlappingWeapon;
 	}
 }
 
@@ -125,9 +125,37 @@ void AOpenWorldCharacter::Attack()
 	}
 }
 
+void AOpenWorldCharacter::ToggleArmed()
+{
+	if (CanDisarm())
+	{
+		PlayArmDisarmMontage("Unequip");
+		CharacterState = ECharacterState::ECS_Unarmed;
+	}
+	else if(CanArm())
+	{
+		PlayArmDisarmMontage("Equip");
+		CharacterState = ECharacterState::ECS_EquippedOneHandedWeapon;
+	}
+}
+
 bool AOpenWorldCharacter::CanAttack()
 {
 	return ActionState == EActionState::EAS_Unoccupied && CharacterState != ECharacterState::ECS_Unarmed;
+}
+
+bool AOpenWorldCharacter::CanDisarm()
+{
+	return ActionState == EActionState::EAS_Unoccupied
+		&& CharacterState != ECharacterState::ECS_Unarmed &&
+		EquippedWeapon;
+}
+
+bool AOpenWorldCharacter::CanArm()
+{
+	return ActionState == EActionState::EAS_Unoccupied
+		&& CharacterState == ECharacterState::ECS_Unarmed &&
+		EquippedWeapon;
 }
 
 void AOpenWorldCharacter::PlayAttackMontage()
@@ -150,7 +178,18 @@ void AOpenWorldCharacter::PlayAttackMontage()
 			break;
 		}
 
-		animInstance->Montage_JumpToSection(sectionName);
+		animInstance->Montage_JumpToSection(sectionName, AttackMontage);
+	}
+}
+
+void AOpenWorldCharacter::PlayArmDisarmMontage(FName sectionName)
+{
+
+	UAnimInstance* animInstance = GetMesh()->GetAnimInstance();
+	if (animInstance && ArmDisarmMontage)
+	{
+		animInstance->Montage_Play(ArmDisarmMontage);
+		animInstance->Montage_JumpToSection(sectionName, ArmDisarmMontage);
 	}
 }
 

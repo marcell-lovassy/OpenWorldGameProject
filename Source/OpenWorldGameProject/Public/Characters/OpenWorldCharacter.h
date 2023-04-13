@@ -15,6 +15,7 @@ class UCameraComponent;
 class UGroomComponent;
 class AItem;
 class UAnimMontage;
+class AWeapon;
 
 UCLASS()
 class OPENWORLDGAMEPROJECT_API AOpenWorldCharacter : public ACharacter
@@ -51,6 +52,9 @@ protected:
 	UInputAction* InteractAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* EquipUnequipAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	float MouseSensitivity = 1.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
@@ -63,15 +67,19 @@ protected:
 	void Look(const FInputActionValue& value);
 	void Interact();
 	void Attack();
+	void ToggleArmed();
 	void Dodge();
 
 	/*
 	Play montage functions
 	*/
 	void PlayAttackMontage();
+	void PlayArmDisarmMontage(FName sectionName);
 	UFUNCTION(BlueprintCallable)
 	void EndAttack();
 	bool CanAttack();
+	bool CanDisarm();
+	bool CanArm();
 
 private:
 
@@ -91,12 +99,17 @@ private:
 	UPROPERTY(VisibleInstanceOnly)
 	AItem* OverlappingItem;
 
+	UPROPERTY(VisibleAnywhere, Category = Weapon)
+	AWeapon* EquippedWeapon;
+
 	/*
 	Animation Montages
 	*/
 
 	UPROPERTY(EditDefaultsOnly, Category = Montages)
 	UAnimMontage* AttackMontage;
+	UPROPERTY(EditDefaultsOnly, Category = Montages)
+	UAnimMontage* ArmDisarmMontage;
 
 public:
 	FORCEINLINE void SetOverlappingItem(AItem* item) { OverlappingItem = item; }
