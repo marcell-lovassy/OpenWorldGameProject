@@ -77,6 +77,8 @@ void AOpenWorldCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 
 void AOpenWorldCharacter::Move(const FInputActionValue& value)
 {
+	if (ActionState == EActionState::EAS_Attacking) return;
+
 	const FVector2D movementVector = value.Get<FVector2D>();
 	/*FVector forward = GetActorForwardVector();
 	FVector right = GetActorRightVector();
@@ -115,11 +117,17 @@ void AOpenWorldCharacter::Interact()
 
 void AOpenWorldCharacter::Attack()
 {
-	if(ActionState == EActionState::EAS_Unoccupied)
+	CanAttack();
+	if(CanAttack())
 	{
 		PlayAttackMontage();
 		ActionState = EActionState::EAS_Attacking;
 	}
+}
+
+bool AOpenWorldCharacter::CanAttack()
+{
+	return ActionState == EActionState::EAS_Unoccupied && CharacterState != ECharacterState::ECS_Unarmed;
 }
 
 void AOpenWorldCharacter::PlayAttackMontage()
@@ -143,17 +151,12 @@ void AOpenWorldCharacter::PlayAttackMontage()
 		}
 
 		animInstance->Montage_JumpToSection(sectionName);
-		//animInstance->OnMontageEnded.AddDynamic(this, &AOpenWorldCharacter::OnAttackMonstageEnded);
-		//animInstance->OnPlayMontageNotifyEnd.AddDynamic(this, &AOpenWorldCharacter::OnAttackMonstageEnded)
 	}
 }
 
-void AOpenWorldCharacter::OnAttackMonstageEnded(UAnimMontage* Montage, bool bInterrupted)
+void AOpenWorldCharacter::EndAttack()
 {
 	ActionState = EActionState::EAS_Unoccupied;
-	if(Montage == AttackMontage)
-	{
-	}
 }
 
 void AOpenWorldCharacter::Dodge()

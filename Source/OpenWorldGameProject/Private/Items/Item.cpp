@@ -29,6 +29,12 @@ void AItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	runningTime += DeltaTime;
+
+	if(ItemState == EItemState::EIS_Hovering)
+	{
+		FVector hoverLocation(startLocation.X, startLocation.Y, startLocation.Z + TransformedSin());
+		SetActorLocation(hoverLocation);
+	}
 }
 
 float AItem::TransformedSin()

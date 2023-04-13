@@ -69,11 +69,15 @@ protected:
 	Play montage functions
 	*/
 	void PlayAttackMontage();
-	void OnAttackMonstageEnded(UAnimMontage* Montage, bool bInterrupted);
+	UFUNCTION(BlueprintCallable)
+	void EndAttack();
+	bool CanAttack();
 
 private:
 
 	ECharacterState CharacterState = ECharacterState::ECS_Unarmed;
+
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	EActionState ActionState = EActionState::EAS_Unoccupied;
 
 	UPROPERTY(VisibleAnywhere)
@@ -96,5 +100,5 @@ private:
 
 public:
 	FORCEINLINE void SetOverlappingItem(AItem* item) { OverlappingItem = item; }
-	FORCEINLINE ECharacterState GetCharacterState() const { return CharacterState;  }
+	FORCEINLINE ECharacterState GetCharacterState() const { return CharacterState; }
 };
