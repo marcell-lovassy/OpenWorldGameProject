@@ -47,6 +47,8 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UStaticMeshComponent* ItemMesh;
+	UPROPERTY(VisibleAnywhere)
+	USphereComponent* SphereTrigger;
 
 	EItemState ItemState = EItemState::EIS_Hovering;
 
@@ -59,8 +61,7 @@ private:
 
 	
 
-	UPROPERTY(VisibleAnywhere)
-	USphereComponent* SphereTrigger;
+	
 };
 
 template<typename T>

@@ -76,7 +76,7 @@ void AOpenWorldCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 
 void AOpenWorldCharacter::Move(const FInputActionValue& value)
 {
-	if (ActionState == EActionState::EAS_Attacking) return;
+	if (ActionState != EActionState::EAS_Unoccupied) return;
 
 	const FVector2D movementVector = value.Get<FVector2D>();
 	/*FVector forward = GetActorForwardVector();
@@ -111,6 +111,7 @@ void AOpenWorldCharacter::Interact()
 	{
 		overlappingWeapon->Equip(GetMesh(), FName("RightHandSocket"));
 		CharacterState = ECharacterState::ECS_EquippedOneHandedWeapon;
+		OverlappingItem = nullptr;
 		EquippedWeapon = overlappingWeapon;
 	}
 }
@@ -131,11 +132,13 @@ void AOpenWorldCharacter::ToggleArmed()
 	{
 		PlayArmDisarmMontage("Unequip");
 		CharacterState = ECharacterState::ECS_Unarmed;
+		ActionState = EActionState::EAS_EquippingWeapon;
 	}
 	else if(CanArm())
 	{
 		PlayArmDisarmMontage("Equip");
 		CharacterState = ECharacterState::ECS_EquippedOneHandedWeapon;
+		ActionState = EActionState::EAS_EquippingWeapon;
 	}
 }
 
@@ -164,7 +167,7 @@ void AOpenWorldCharacter::PlayAttackMontage()
 	if (animInstance && AttackMontage)
 	{
 		animInstance->Montage_Play(AttackMontage);
-		const int32 selection = FMath::RandRange(0, 1);
+		const int32 selection = FMath::RandRange(0, 2);
 		FName sectionName = FName();
 		switch (selection)
 		{
@@ -173,6 +176,9 @@ void AOpenWorldCharacter::PlayAttackMontage()
 			break;
 		case 1:
 			sectionName = FName("Attack2");
+			break;
+		case 2:
+			sectionName = FName("Attack3");
 			break;
 		default:
 			break;
@@ -194,6 +200,27 @@ void AOpenWorldCharacter::PlayArmDisarmMontage(FName sectionName)
 }
 
 void AOpenWorldCharacter::EndAttack()
+{
+	ActionState = EActionState::EAS_Unoccupied;
+}
+
+void AOpenWorldCharacter::Disarm()
+{
+	if(EquippedWeapon)
+	{
+		EquippedWeapon->AttachMeshToSocket(GetMesh(), FName("SpineSocket"));
+	}
+}
+
+void AOpenWorldCharacter::Arm()
+{
+	if (EquippedWeapon)
+	{
+		EquippedWeapon->AttachMeshToSocket(GetMesh(), FName("RightHandSocket"));
+	}
+}
+
+void AOpenWorldCharacter::EndArmDisarm()
 {
 	ActionState = EActionState::EAS_Unoccupied;
 }

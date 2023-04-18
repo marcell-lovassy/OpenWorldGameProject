@@ -77,6 +77,12 @@ protected:
 	void PlayArmDisarmMontage(FName sectionName);
 	UFUNCTION(BlueprintCallable)
 	void EndAttack();
+	UFUNCTION(BlueprintCallable)
+	void Disarm();
+	UFUNCTION(BlueprintCallable)
+	void Arm();
+	UFUNCTION(BlueprintCallable)
+	void EndArmDisarm();
 	bool CanAttack();
 	bool CanDisarm();
 	bool CanArm();

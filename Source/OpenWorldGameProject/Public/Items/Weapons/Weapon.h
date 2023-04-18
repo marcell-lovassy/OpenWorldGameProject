@@ -6,6 +6,9 @@
 #include "Items/Item.h"
 #include "Weapon.generated.h"
 
+class USoundBase;
+class UBoxComponent;
+
 /**
  * 
  */
@@ -16,7 +19,11 @@ class OPENWORLDGAMEPROJECT_API AWeapon : public AItem
 
 public:
 
+	AWeapon();
+
 	void Equip(USceneComponent* InParent, FName InSocketName);
+
+	void AttachMeshToSocket(USceneComponent* InParent, const FName& InSocketName);
 
 protected:
 
@@ -25,4 +32,10 @@ protected:
 	//ufunction inherited
 	virtual void OnSphereTriggerEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) override;
 	
+private:
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
+	USoundBase* EquipSound;
+
+	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
+	UBoxComponent* WeaponBoxCollider;
 };
