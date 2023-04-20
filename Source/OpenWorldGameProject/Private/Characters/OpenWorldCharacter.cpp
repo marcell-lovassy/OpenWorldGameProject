@@ -12,6 +12,7 @@
 #include "Items/Item.h"
 #include "Items/Weapons/Weapon.h"
 #include "Animation/AnimMontage.h"
+#include "Components/BoxComponent.h"
 
 AOpenWorldCharacter::AOpenWorldCharacter()
 {
@@ -188,7 +189,7 @@ void AOpenWorldCharacter::PlayAttackMontage()
 	}
 }
 
-void AOpenWorldCharacter::PlayArmDisarmMontage(FName sectionName)
+void AOpenWorldCharacter::PlayArmDisarmMontage(const FName& sectionName)
 {
 
 	UAnimInstance* animInstance = GetMesh()->GetAnimInstance();
@@ -232,4 +233,13 @@ void AOpenWorldCharacter::Dodge()
 void AOpenWorldCharacter::Jump()
 {
 	Super::Jump();
+}
+
+void AOpenWorldCharacter::SetWeaponCollisionEnabled(ECollisionEnabled::Type collisionEnabled)
+{
+	if(EquippedWeapon && EquippedWeapon->GetWeaponBox())
+	{
+		EquippedWeapon->GetWeaponBox()->SetCollisionEnabled(collisionEnabled);
+		EquippedWeapon->EmptyIgnoredActors();
+	}
 }

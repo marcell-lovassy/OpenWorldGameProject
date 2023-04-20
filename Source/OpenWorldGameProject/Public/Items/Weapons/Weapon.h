@@ -20,11 +20,9 @@ class OPENWORLDGAMEPROJECT_API AWeapon : public AItem
 public:
 
 	AWeapon();
-
 	void Equip(USceneComponent* InParent, FName InSocketName);
-
 	void AttachMeshToSocket(USceneComponent* InParent, const FName& InSocketName);
-
+	FORCEINLINE void EmptyIgnoredActors() { IgnoreActors.Empty(); }
 protected:
 
 	virtual void BeginPlay() override;
@@ -48,4 +46,10 @@ private:
 	USceneComponent* BoxTraceStart;
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* BoxTraceEnd;
+
+	TArray<AActor*> IgnoreActors;
+
+public:
+
+	FORCEINLINE UBoxComponent* GetWeaponBox() const { return WeaponBoxCollider; }
 };

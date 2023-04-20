@@ -28,6 +28,10 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void Jump() override;
+
+	UFUNCTION(BlueprintCallable)
+	void SetWeaponCollisionEnabled(ECollisionEnabled::Type collisionEnabled);
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -74,7 +78,7 @@ protected:
 	Play montage functions
 	*/
 	void PlayAttackMontage();
-	void PlayArmDisarmMontage(FName sectionName);
+	void PlayArmDisarmMontage(const FName& sectionName);
 	UFUNCTION(BlueprintCallable)
 	void EndAttack();
 	UFUNCTION(BlueprintCallable)
