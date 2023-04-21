@@ -38,6 +38,12 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = Montages)
 	UAnimMontage* HitReactionMontage;
 
+	UPROPERTY(EditAnywhere, Category = Sounds)
+	USoundBase* HitSound;
+
+	UPROPERTY(EditAnywhere, Category = VisualEffects)
+	UParticleSystem* HitParticles;
+
 	void DirectionalHitReaction(const FVector& impactPoint);
 	void GetMontageSectionForHitReaction(double theta, FString& montageSection);
 public:	

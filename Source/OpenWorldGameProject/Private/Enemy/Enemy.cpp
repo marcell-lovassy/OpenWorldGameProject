@@ -7,6 +7,7 @@
 #include "OpenWorldGameProject/DebugMacros.h"
 #include "Animation/AnimMontage.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/GameplayStatics.h"
 
 
 AEnemy::AEnemy()
@@ -53,8 +54,16 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void AEnemy::GetHit(const FVector& impactPoint)
 {
-	DRAW_DEBUG_SPHERE_TIME(impactPoint, FColor::Yellow, 2.f);
+	//DRAW_DEBUG_SPHERE_TIME(impactPoint, FColor::Yellow, 2.f);
 	DirectionalHitReaction(impactPoint);
+	if(HitSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, HitSound, impactPoint);
+	}
+	if(HitParticles)
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(this, HitParticles, impactPoint, impactPoint.GetSafeNormal().Rotation());
+	}
 }
 
 void AEnemy::DirectionalHitReaction(const FVector& impactPoint)
@@ -67,22 +76,22 @@ void AEnemy::DirectionalHitReaction(const FVector& impactPoint)
 	//here					=1		=1
 	const double cosTheta = FVector::DotProduct(forward, toHit);
 
-	//this is in radians, need to convert it to degree
+	//this is in radians, need to convert it to degrees
 	double theta = FMath::Acos(cosTheta);
 	theta = FMath::RadiansToDegrees(theta);
-	UE_LOG(LogTemp, Warning, TEXT("Dot: %f"), theta);
 
-	UKismetSystemLibrary::DrawDebugArrow(this, GetActorLocation(), GetActorLocation() + forward * 60.f, 5.f, FColor::Red, 5.f);
-	UKismetSystemLibrary::DrawDebugArrow(this, GetActorLocation(), GetActorLocation() + toHit * 60.f, 5.f, FColor::Green, 5.f);
-
+	//cross product is a vector that is perpendiclural to the two vector
 	//if cross product points down, theta should be negative
 	const FVector crossProduct = FVector::CrossProduct(forward, toHit);
+
+	//UKismetSystemLibrary::DrawDebugArrow(this, GetActorLocation(), GetActorLocation() + forward * 60.f, 5.f, FColor::Red, 5.f);
+	//UKismetSystemLibrary::DrawDebugArrow(this, GetActorLocation(), GetActorLocation() + toHit * 60.f, 5.f, FColor::Green, 5.f);
+	//UKismetSystemLibrary::DrawDebugArrow(this, GetActorLocation(), GetActorLocation() + crossProduct * 100.f, 5.f, FColor::Blue, 5.f);
 
 	if (crossProduct.Z < 0)
 	{
 		theta *= -1.f;
 	}
-	UKismetSystemLibrary::DrawDebugArrow(this, GetActorLocation(), GetActorLocation() + crossProduct * 100.f, 5.f, FColor::Blue, 5.f);
 
 	FString montageSection = "FromBack";
 	GetMontageSectionForHitReaction(theta, montageSection);
@@ -105,4 +114,3 @@ void AEnemy::GetMontageSectionForHitReaction(double theta, FString& montageSecti
 		montageSection = "FromLeft";
 	}
 }
-
