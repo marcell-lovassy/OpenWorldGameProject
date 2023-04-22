@@ -88,13 +88,19 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 		actorsToIgnore,
 		EDrawDebugTrace::None, //EDrawDebugTrace::ForDuration (for debugging)
 		hitResult,
-		true);
+		true
+	);
 
-	IHitInterface* hitObject = Cast<IHitInterface>(hitResult.GetActor());
-
-	if(hitObject)
+	if(hitResult.GetActor())
 	{
-		hitObject->GetHit(hitResult.ImpactPoint);
-		IgnoreActors.AddUnique(hitResult.GetActor());
+		IHitInterface* hitObject = Cast<IHitInterface>(hitResult.GetActor());
+
+		if(hitObject)
+		{
+			hitObject->GetHit(hitResult.ImpactPoint);
+			IgnoreActors.AddUnique(hitResult.GetActor());
+		}
+
+		CreateFields(hitResult.ImpactPoint);
 	}
 }
